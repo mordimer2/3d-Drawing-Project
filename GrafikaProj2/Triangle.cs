@@ -87,7 +87,7 @@ namespace GrafikaProj2
             // assuming matrice is 2x2
             return matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0];
         }
-        private void CalculateCoefficients()
+        public void CalculateCoefficients()
         {
             SortPointsByYAxis();
             double[] point1 = Figure.actualListOfPoints[Point1];
@@ -113,7 +113,6 @@ namespace GrafikaProj2
 
         public double ZValue(double x, double y)
         {
-            CalculateCoefficients();
             double z = int.MaxValue;
             if (C != 0)
                 z = (-A * x - B * y - D) / C;

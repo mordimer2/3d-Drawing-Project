@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Shapes; 
 using System.Windows.Threading;
 
 
@@ -23,9 +23,9 @@ namespace GrafikaProj2
     public partial class MainWindow : Window
     {
         private Figure figure;
-        double xDeg = 0;
-        double yDeg = 0;
-        double zDeg = 0;
+        double xDeg = 20;
+        double yDeg = 30;
+        double zDeg = 40;
         double size = 100;
         bool zmiana = true;
 
@@ -34,55 +34,65 @@ namespace GrafikaProj2
         {
             InitializeComponent();
             figure = new Figure(350, 150, 0);
-            figure.Transform(11,20,40,50);
+            
             zBuffer = new ZBuffer((int)Width, (int)Height,  new byte[] { 0, 0, 0 });
-            zBuffer.CalculateDepth(figure.triangles);
-            //DispatcherTimer timer = new DispatcherTimer();
-            //timer.Interval = new TimeSpan(100000);
-            //timer.Tick += DrawSquare;
-            //timer.Start();
-            DrawSquare(null, null);
+
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(100000);
+            timer.Tick += DrawSquare;
+            timer.Start();
         }
 
         private void DrawSquare(object sender, EventArgs args)
         {
-            //if (xDeg >= 360) xDeg -= 360;
-            //if (yDeg >= 360) yDeg -= 360;
-            //if (zDeg >= 360) zDeg -= 360;
-            //if (size < 200 && zmiana) size += 1; else zmiana = false;
-            //if (size > 100 && !zmiana) size -= 1; else zmiana = true;
-            //figure.Scale(size);
-            //Random r = new Random();
-            //int rand = r.Next(3);
-            //if (rand == 0) xDeg += 0.5;
-            //else if (rand == 1) yDeg += 0.5;
-            //else zDeg += 0.5;
-            //mainCanvas.Children.Clear();
-            int lastI = 0;
+            if (xDeg >= 360) xDeg -= 360;
+            if (yDeg >= 360) yDeg -= 360;
+            if (zDeg >= 360) zDeg -= 360;
+            if (size < 200 && zmiana) size += 1; else zmiana = false;
+            if (size > 100 && !zmiana) size -= 1; else zmiana = true;
+            Random r = new Random();
+            int rand = r.Next(3);
+            if (rand == 0) xDeg += 0.5;
+            else if (rand == 1) yDeg += 0.5;
+            else zDeg += 0.5;
+            mainCanvas.Children.Clear();
+
+            figure.Transform(xDeg,yDeg, zDeg, size);
+            //zBuffer.CalculateDepth(figure.triangles);
+
+
+            
             for (int i = 0; i < zBuffer.Surface.GetLength(0); i++)
             {
-                int scope=0;
-                bool colorChanged = false;
-                
-                byte[] lastColor = new byte[3];
                 for (int j = 0; j < zBuffer.Surface.GetLength(1); j++)
                 {
-                    if (zBuffer.Surface[i, j] == int.MaxValue) continue;
+                    //if (zBuffer.Surface[i, j] == int.MaxValue) continue;
+                    SetPixel(i, j, zBuffer.colorRGB[i, j]);
                     //SetPixel(i, j, zBuffer.colorRGB[i, j]);
-                    if (isSameRGB(lastColor, zBuffer.colorRGB[i,j]) || colorChanged==false)
-                    {
-                        if (colorChanged == false) { lastI = i; }
-                        scope += 1;
-                        colorChanged = true;
-                        lastColor = zBuffer.colorRGB[i, j];
-                        
-                    }
-                    else if (scope > 0)
-                    {
-                        DrawLine(new int[] { i - scope, j }, new int[] { i, j }, lastColor);
-                        scope = 0;
-                        colorChanged = false;
-                    }
+                    //if (isSameRGB(lastColor, zBuffer.colorRGB[i,j]) || colorChanged==false)
+                    //{
+                    //    if (colorChanged == false) { lastI = i; }
+                    //    scope += 1;
+                    //    colorChanged = true;
+                    //    lastColor = zBuffer.colorRGB[i, j];
+
+                    //}
+                    //else if (scope > 0)
+                    //{
+                    //    DrawLine(new int[] { i - scope, j }, new int[] { i, j }, lastColor);
+                    //    scope = 0;
+                    //    colorChanged = false;
+                    //}
+                }
+                foreach (var triangle in figure.triangles)
+                {
+                    byte[] clr = new byte[] { 0, 0, 0 };//new byte[] { (byte)randd.Next(255), (byte)randd.Next(255), (byte)randd.Next(255) };
+                    double[] p1 = Figure.actualListOfPoints[triangle.Point1];
+                    double[] p2 = Figure.actualListOfPoints[triangle.Point2];
+                    double[] p3 = Figure.actualListOfPoints[triangle.Point3];
+                    DrawLine(p1, p2, clr);
+                    DrawLine(p1, p3, clr);
+                    DrawLine(p2, p3, clr);
                 }
 
             }
@@ -97,13 +107,17 @@ namespace GrafikaProj2
 
         private void SetPixel(double x, double y, byte[] color)
         {
-            Rectangle rec = new Rectangle();
-            rec.Width = 1; rec.Height = 1;
-            rec.Fill = new SolidColorBrush(Color.FromRgb(color[0], color[1], color[2]));
-            mainCanvas.Children.Add(rec);
+            Brush aBrush = (Brush)Brushes.Black;
+            System.Drawing.Graphics g = mainCanvas.CreateGraphics();
+
+            g.FillRectangle(aBrush, x, y, 1, 1);
+            //Rectangle rec = new Rectangle();
+            //rec.Width = 1; rec.Height = 1;
+            //rec.Fill = new SolidColorBrush(Color.FromRgb(color[0], color[1], color[2]));
+            //mainCanvas.Children.Add(rec);
         }
 
-        private void DrawLine(int[] start, int[] stop, byte[] color)
+        private void DrawLine(double[] start, double[] stop, byte[] color)
         {
             Line l = new Line();
             SolidColorBrush brush = new SolidColorBrush(Color.FromRgb(color[0], color[1], color[2]));
