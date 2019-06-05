@@ -44,7 +44,7 @@ namespace GrafikaProj2
                 }
         }
 
-        public void fillBottomFlatTriangle(double[] v1, double[] v2, double[] v3, Triangle t, byte[] color)
+        private void fillBottomFlatTriangle(double[] v1, double[] v2, double[] v3, Triangle t, byte[] color)
         {
             double invslope1 = (v2[0] - v1[0]) / (v2[1] - v1[1]);
             double invslope2 = (v3[0] - v1[0]) / (v3[1] - v1[1]);

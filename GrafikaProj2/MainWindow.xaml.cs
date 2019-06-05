@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -9,10 +10,11 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes; 
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using Rectangle = System.Windows.Shapes.Rectangle;
 
@@ -33,7 +35,60 @@ namespace GrafikaProj2
         ZBuffer zBuffer;
         Bitmap bitmap;
         double[,] mt;
-        private void fillBottomFlatTriangle(double[] v1, double[] v2, double[] v3, Triangle t, byte[] color)
+
+
+
+        #region Do Uusunięcia
+        private void main( int[,] integers)
+        {
+            int stride = integers.GetLength(0)* 4;
+            //Random random = new Random();
+            //for (int x = 0; x < width; ++x)
+            //{
+            //    for (int y = 0; y < height; ++y)
+            //    {
+            //        byte[] bgra = new byte[] { (byte)random.Next(255), (byte)random.Next(255), (byte)random.Next(255), 255 };
+            //        integers[x, y] = BitConverter.ToInt32(bgra, 0);
+            //    }
+            //}
+            Bitmap bitmap;
+            unsafe
+            {
+                fixed (int* intPtr = &integers[0, 0])
+                {
+                    bitmap = new Bitmap(integers.GetLength(0), integers.GetLength(1), stride*5, System.Drawing.Imaging.PixelFormat.Format32bppRgb, new IntPtr(intPtr));
+                }
+            }
+            mainIMG.Source = ImageSourceForBitmap(bitmap);
+        }
+
+
+
+
+        // Copy into bitmap
+
+
+        private void fillTopFlatTriangle(double[] v1, double[] v2, double[] v3, byte[] color=null)
+        {
+            double invslope1 = (v3[0] - v1[0]) / (v3[1] - v1[1]);
+            double invslope2 = (v3[0] - v2[0]) / (v3[1] - v2[1]);
+
+            double curx1 = v3[0];
+            double curx2 = v3[0];
+            Random rand = new Random();
+            for (int scanlineY = (int)v3[1]; scanlineY > v1[1]; scanlineY--)
+            {
+                for (double xstart = curx1; xstart < curx2; xstart++)
+                {
+                    this.mt[(int)xstart, scanlineY] = BitConverter.ToInt32(new byte[] { (byte) rand.Next(255), (byte)rand.Next(255) , (byte)rand.Next(255), 255 }, 0);
+                    //this.colorRGB[(int)xstart, scanlineY] = color;
+                }
+                curx1 -= invslope1;
+                curx2 -= invslope2;
+            }
+        }
+
+        private void fillBottomFlatTriangle(double[] v1, double[] v2, double[] v3, byte[] color = null)
         {
             double invslope1 = (v2[0] - v1[0]) / (v2[1] - v1[1]);
             double invslope2 = (v3[0] - v1[0]) / (v3[1] - v1[1]);
@@ -41,32 +96,35 @@ namespace GrafikaProj2
             double curx1 = v1[0];
             double curx2 = v1[0];
 
+            Random rand = new Random();
             for (int scanlineY = (int)v1[1]; scanlineY <= v2[1]; scanlineY++)
             {
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
-                    double tmp = t.ZValue(xstart, scanlineY);
-                    try
-                    {
-                        if (tmp < this.Surface[(int)xstart, scanlineY])
-                        {
-                            this.Surface[(int)xstart, scanlineY] = tmp;
-                            this.colorRGB[(int)xstart, scanlineY] = color;
-                        }
-                    }
-                    catch (Exception) { }
-
-
+                    this.mt[(int)xstart, scanlineY] = BitConverter.ToInt32(new byte[] { (byte) rand.Next(255), (byte)rand.Next(255) , (byte)rand.Next(255), 255 }, 0);
                 }
                 curx1 += invslope1;
                 curx2 += invslope2;
             }
         }
+
+
+        #endregion
+
+
         public MainWindow()
         {
             InitializeComponent();
             figure = new Figure(350, 150, 0);
-            mt == new double[(int)Width, (int)Height];
+            mt = new double[(int)Width, (int)Height];
+            //fillTopFlatTriangle(new double[] { 50, 50 }, new double[] { 500,50}, new double[] { 400, 400 });
+            fillBottomFlatTriangle(new double[] { 200, 50 }, new double[] { 100,400}, new double[] { 300, 400 });
+
+            int[,] tmp = new int[(int)Width, (int)Height];
+            for (int i = 0; i < mt.GetLength(0); i++)
+                for (int j = 0; j < mt.GetLength(1); j++)
+                    tmp[i, j] = (int)mt[i, j];
+            main(tmp);
             //zBuffer = new ZBuffer((int)Width, (int)Height,  new byte[] { 0, 0, 0 });
             //bitmap = new Bitmap((int)Width, (int)Height);
             //DispatcherTimer timer = new DispatcherTimer();
@@ -87,9 +145,9 @@ namespace GrafikaProj2
             if (rand == 0) xDeg += 0.5;
             else if (rand == 1) yDeg += 0.5;
             else zDeg += 0.5;
-            mainCanvas.Children.Clear();
+            //mainCanvas.Children.Clear();
 
-            figure.Transform(xDeg,yDeg, zDeg, size);
+            figure.Transform(xDeg, yDeg, zDeg, size);
             zBuffer.CalculateDepth(figure.triangles);
             foreach (var triangle in figure.triangles)
             {
@@ -124,8 +182,8 @@ namespace GrafikaProj2
                     //}
                 }
             }
-            
-            
+
+
         }
 
         private bool isSameRGB(byte[] a, byte[] b)
@@ -143,7 +201,7 @@ namespace GrafikaProj2
             rec.Width = 1;
             rec.Height = 1;
             rec.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(color[0], color[1], color[2]));
-            mainCanvas.Children.Add(rec);
+            //mainCanvas.Children.Add(rec);
             //bitmap.SetPixel((int)x, (int)y, System.Drawing.Color.FromArgb(color[0], color[1], color[2]));
             //System.Drawing.Point p = new System.Drawing.Point((int)x, (int)y);
             //mainCanvas.Children.Add();
@@ -156,8 +214,8 @@ namespace GrafikaProj2
         private void DrawLine(double[] start, double[] stop, byte[] color)
         {
             Line l = new Line();
-            SolidColorBrush brush= new SolidColorBrush(System.Windows.Media.Color.FromRgb(color[0], color[1], color[2]));
-             //= new SolidColorBrush(Color.FromRgb(color[0], color[1], color[2]));
+            SolidColorBrush brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(color[0], color[1], color[2]));
+            //= new SolidColorBrush(Color.FromRgb(color[0], color[1], color[2]));
             l.StrokeThickness = 1;
             l.Stroke = brush;
 
@@ -165,12 +223,33 @@ namespace GrafikaProj2
             l.X2 = (int)stop[0];
             l.Y1 = (int)start[1];
             l.Y2 = (int)stop[1];
-            mainCanvas.Children.Add(l);
+            //mainCanvas.Children.Add(l);
         }
 
         private void mainWindow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
 
+        }
+
+        [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DeleteObject([In] IntPtr hObject);
+
+        public ImageSource ImageSourceForBitmap(Bitmap bmp)
+        {
+            var handle = bmp.GetHbitmap();
+            try
+            {
+                ImageSource newSource = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
+                DeleteObject(handle);
+                return newSource;
+            }
+            catch (Exception ex)
+            {
+                DeleteObject(handle);
+                return null;
+            }
         }
     }
 }
