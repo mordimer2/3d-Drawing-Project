@@ -66,7 +66,12 @@ namespace GrafikaProj2
             {
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
-                    this.mt[(int)xstart, scanlineY] = BitConverter.ToInt32(new byte[] { (byte)rand.Next(255), (byte)rand.Next(255), (byte)rand.Next(255), 255 }, 0);
+                    try
+                    {
+                        this.mt[(int)xstart, scanlineY] = 2;
+
+                    }
+                    catch (IndexOutOfRangeException) { }
                 }
                 curx1 += invslope1;
                 curx2 += invslope2;
@@ -76,7 +81,9 @@ namespace GrafikaProj2
         {
             InitializeComponent();
             figure = new Figure(350, 150, 0);
-            mt = new double[(int)Width, (int)Height];
+            mt = new double[(int)Width/4,(int)Height/4];
+            fillBottomFlatTriangle(new double[] { 10, 30 }, new double[] { 5, 50 }, new double[] { 50, 50 });
+            DrawLineByLine(mt);
             //zBuffer = new ZBuffer((int)Width, (int)Height,  new byte[] { 0, 0, 0 });
             //bitmap = new Bitmap((int)Width, (int)Height);
             //DispatcherTimer timer = new DispatcherTimer();
@@ -84,6 +91,39 @@ namespace GrafikaProj2
             //timer.Tick += DrawSquare;
             //timer.Start();
         }
+
+
+        private void DrawLineByLine(double[,] depthMatrix)
+        {
+            int[] actualStartDepth = new int[] { 0, 0 };
+            bool newBeg = false;
+            for (int i = 0; i < mt.GetLength(0); i++)
+            {
+                for (int j = 1; j < mt.GetLength(1); j++)
+                {
+                    if (depthMatrix[i, j] == 0)
+                    {
+                        if (newBeg)
+                        {
+                            newBeg = !newBeg;
+                            DrawLine(actualStartDepth, new int[] { i, j }, new byte[] { 0, 0, 0 });
+                        }
+                        continue;
+                    }
+                    if (!newBeg && depthMatrix[i,j-1]== depthMatrix[i, j] )
+                    {
+                        actualStartDepth = new int[] { i , j-1 };
+                        newBeg = true;
+                    }
+                    if(newBeg && (depthMatrix[i,j-1]!= depthMatrix[i, j]))
+                    {
+                        DrawLine(actualStartDepth, new int[] { i, j }, new byte[] { 0, 0, 0 });
+                        actualStartDepth = new int[] { i, j };
+                    }
+                }
+            }
+        }
+
 
         private void DrawSquare(object sender, EventArgs args)
         {
@@ -137,7 +177,6 @@ namespace GrafikaProj2
             
             
         }
-
         private bool isSameRGB(byte[] a, byte[] b)
         {
             for (int i = 0; i < a.Length; i++)
@@ -166,9 +205,23 @@ namespace GrafikaProj2
         private void DrawLine(double[] start, double[] stop, byte[] color)
         {
             Line l = new Line();
-            SolidColorBrush brush= new SolidColorBrush(System.Windows.Media.Color.FromRgb(color[0], color[1], color[2]));
-             //= new SolidColorBrush(Color.FromRgb(color[0], color[1], color[2]));
+            SolidColorBrush brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(color[0], color[1], color[2]));
+            //= new SolidColorBrush(Color.FromRgb(color[0], color[1], color[2]));
             l.StrokeThickness = 1;
+            l.Stroke = brush;
+
+            l.X1 = (int)start[0];
+            l.X2 = (int)stop[0];
+            l.Y1 = (int)start[1];
+            l.Y2 = (int)stop[1];
+            mainCanvas.Children.Add(l);
+        }
+        private void DrawLine(int[] start, int[] stop, byte[] color)
+        {
+            Line l = new Line();
+            SolidColorBrush brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(color[0], color[1], color[2]));
+            //= new SolidColorBrush(Color.FromRgb(color[0], color[1], color[2]));
+            l.StrokeThickness = 2;
             l.Stroke = brush;
 
             l.X1 = (int)start[0];
