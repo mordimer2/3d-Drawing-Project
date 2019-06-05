@@ -84,7 +84,7 @@ namespace GrafikaProj2
             }
         }
 
-        public void test(object sender, EventArgs asd)
+        public void test2(object sender, EventArgs asd)
         {
             mt = new double[(int)Width, (int)Height];
             mainCanvas.Children.Clear();
@@ -93,20 +93,47 @@ namespace GrafikaProj2
             fillTopFlatTriangle(new double[] { 5, 5 }, new double[] { 100, 5 }, new double[] { 10, 100 });
             DrawLineByLine(mt);
         }
+
+        public void DrawItFinally(byte[] byteArray)
+        {
+            BitmapSource bitmapSource = BitmapSource.Create((int)Width, (int)Height, 
+                                                            1,1, 
+                                                            PixelFormats.Indexed8, BitmapPalettes.Gray256,
+                                                            byteArray, (int)(Width * 1 + (Width % 2)));
+
+            imageHolder.Source = bitmapSource;
+        }
         public MainWindow()
         {
             InitializeComponent();
             figure = new Figure(350, 150, 0);
             mt = new double[(int)Width,(int)Height];
 
-            //zBuffer = new ZBuffer((int)Width, (int)Height,  new byte[] { 0, 0, 0 });
+            zBuffer = new ZBuffer((int)Width, (int)Height, new byte[] { 0, 0, 0 });
             //bitmap = new Bitmap((int)Width, (int)Height);
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(100000);
-            timer.Tick += test;
+            timer.Interval = new TimeSpan(1000000);
+            timer.Tick += DrawNew;
             timer.Start();
         }
+        public void DrawNew(object sender, EventArgs args)
+        {
+            if (xDeg >= 360) xDeg -= 360;
+            if (yDeg >= 360) yDeg -= 360;
+            if (zDeg >= 360) zDeg -= 360;
+            if (size < 200 && zmiana) size += 1; else zmiana = false;
+            if (size > 100 && !zmiana) size -= 1; else zmiana = true;
+            Random r = new Random();
+            int rand = r.Next(3);
+            if (rand == 0) xDeg += 0.5;
+            else if (rand == 1) yDeg += 0.5;
+            else zDeg += 0.5;
+            mainCanvas.Children.Clear();
 
+            figure.Transform(xDeg, yDeg, zDeg, size);
+            zBuffer.CalculateDepth(figure.triangles);
+            DrawItFinally(zBuffer.colorRGB);
+        }
 
         private void DrawLineByLine(double[,] depthMatrix)
         {
@@ -171,7 +198,7 @@ namespace GrafikaProj2
                 for (int j = 0; j < zBuffer.Surface.GetLength(1); j++)
                 {
                     if (zBuffer.Surface[i, j] == int.MaxValue) continue;
-                    SetPixel(i, j, zBuffer.colorRGB[i, j]);
+                    //SetPixel(i, j, zBuffer.colorRGB[i* j]);
                     //SetPixel(i, j, zBuffer.colorRGB[i, j]);
                     //if (isSameRGB(lastColor, zBuffer.colorRGB[i,j]) || colorChanged==false)
                     //{

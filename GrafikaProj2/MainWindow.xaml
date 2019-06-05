@@ -9,9 +9,11 @@
         x:Name="mainWindow"
         MouseDoubleClick="mainWindow_MouseDoubleClick">
     <Grid x:Name="mainGrid">
-        <Canvas x:Name="mainCanvas"
-                Height="{Binding ElementName=mainGrid, Path=ActualHeight}" 
+        <Canvas x:Name="mainCanvas"></Canvas>
+        <!--Height="{Binding ElementName=mainGrid, Path=ActualHeight}" 
                 Width="{Binding ElementName=mainGrid, Path=ActualWidth}"
-                Background="PaleGoldenrod"></Canvas>
+                Background="PaleGoldenrod"></Canvas>-->
+        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" x:Name="imageHolder"></Image>
+
     </Grid>
 </Window>
