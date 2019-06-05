@@ -90,22 +90,25 @@ namespace GrafikaProj2
         public void CalculateCoefficients()
         {
             SortPointsByYAxis();
-            double[] point1 = Figure.actualListOfPoints[Point1];
-            double[] point2 = Figure.actualListOfPoints[Point2];
-            double[] point3 = Figure.actualListOfPoints[Point3];
-            //A = (point2[2] - point3[2]) * (point1[1] - point2[1]) - (point1[2] - point2[2]) * (point2[1] - point3[1]);
-            //B = (point2[0] - point3[0]) * (point1[2] - point2[2]) - (point1[0] - point2[0]) * (point2[2] - point3[2]);
-            //C = (point2[1] - point3[1]) * (point1[0] - point2[0]) - (point1[1] - point2[1]) * (point2[0] - point3[0]);
-            //D = -point1[0] * (point2[1] * point3[2] - point2[2] * point3[1]) + point1[1] * (point2[0] * point3[2] - point2[2] * point3[0]) - point1[2] * (point2[0] * point3[1] - point2[1] * Figure.actualListOfPoints[Point3][0]);
-            double[] p1p2 = VectorSum(point1, point2);
-            double[] p1p3 = VectorSum(point1, point3);
+            double[] p1 = Figure.actualListOfPoints[Point1];
+            double[] p2 = Figure.actualListOfPoints[Point2];
+            double[] p3 = Figure.actualListOfPoints[Point3];
+            //A = (p2[2] - p3[2]) * (p1[1] - p2[1]) - (p1[2] - p2[2]) * (p2[1] - p3[1]);
+            //B = (p2[0] - p3[0]) * (p1[2] - p2[2]) - (p1[0] - p2[0]) * (p2[2] - p3[2]);
+            //C = (p2[1] - p3[1]) * (p1[0] - p2[0]) - (p1[1] - p2[1]) * (p2[0] - p3[0]);
+            //D = -p1[0] * (p2[1] * p3[2] - p2[2] * p3[1]) + p1[1] * (p2[0] * p3[2] - p2[2] * p3[0]) - p1[2] * (p2[0] * p3[1] - p2[1] * Figure.actualListOfPoints[Point3][0]);
+            double[] p1p2 = VectorSum(p1, p2);
+            double[] p1p3 = VectorSum(p1, p3);
 
-            A= MatrixDet(new double[,] { { p1p2[1], p1p2[2] },  {p1p3[1], p1p3[2] } });
-            B= MatrixDet(new double[,] { { p1p2[0], p1p2[2] },  {p1p3[0], p1p3[2] } });
-            C= MatrixDet(new double[,] { { p1p2[0], p1p2[1] },  {p1p3[0], p1p3[1] } });
-            D = (-1) * (A * point1[0] + B * point1[1] + C * point1[2]);
+            A = MatrixDet(new double[,] { { p1p2[1], p1p2[2] }, { p1p3[1], p1p3[2] } });
+            B = MatrixDet(new double[,] { { p1p2[0], p1p2[2] }, { p1p3[0], p1p3[2] } });
+            C = MatrixDet(new double[,] { { p1p2[0], p1p2[1] }, { p1p3[0], p1p3[1] } });
+            D = (-1) * (A * p1[0] + B * p1[1] + C * p1[2]);
             // cross product vec1*vec2 =||a||*||b||*sin(angle)
-
+            //A = (p2[1] - p1[1]) * (p3[2] - p1[2]) - (p3[1] - p1[1]) * (p2[2] - p1[2]);
+            //B = (-1) * ((p2[2] - p1[2]) * (p3[0] - p1[0]) - (p3[2] - p1[2]) * (p2[0] - p1[0]));
+            //C = (p2[0] - p1[0]) * (p3[1] - p1[1]) - (p3[0] - p1[0]) * (p2[1] - p1[1]);
+            //D = (-1) * (A * p1[0] + B * p1[1] + C * p1[2]);
         }
 
         private double findMax(double a1, double a2, double a3) { return Math.Max(Math.Max(a1, a2), a3); }
@@ -113,10 +116,21 @@ namespace GrafikaProj2
 
         public double ZValue(double x, double y)
         {
+            //SortPointsByYAxis();
+            //double[] point1 = Figure.actualListOfPoints[Point1];
+            //double[] point2 = Figure.actualListOfPoints[Point2];
+            //double[] point3 = Figure.actualListOfPoints[Point3];
+            //CalculateCoefficients();
+
             double z = int.MaxValue;
             if (C != 0)
-                z = (-A * x - B * y - D) / C;
+                z = ((-1)*(A * x + B * y + D)) / C;
+            if (MaxZ == MinZ) return MaxZ;
+            //double asd=((2*((z-MinZ)/(MaxZ-MinZ))-1)+1)/2;
+            if (z < MinZ || z > MaxZ) throw new Exception("Dupa");
             return z;
+            // TODO: Znaleźć dlaczego jest zwracane złe z, prawdopodobnie współczynniki
+            //return 2 * ((z-MinZ)/(MaxZ-MinZ))-1;
         }
     }
 }
