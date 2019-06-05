@@ -41,7 +41,15 @@ namespace GrafikaProj2
         #region Do Uusunięcia
         private void main( int[,] integers)
         {
-            int stride = integers.GetLength(0)* 4;
+
+            List<System.Windows.Media.Color> colors = new List<System.Windows.Media.Color>();
+            //for (byte i = 0; i < 255; i++)
+            //    for (byte j = 0; j < 255; j++)
+            //        for (byte k = 0; k < 255; k++)
+            //            colors.Add(System.Windows.Media.Color.FromRgb(i,j,k));
+            BitmapPalette myPalette = new BitmapPalette(colors);
+            //int stride = (int)((double)((4 * (integers.GetLength(0)* 1+ 31))) / 32)+1;
+            //int stride = (int)(3 * (double)integers.GetLength(0));
             //Random random = new Random();
             //for (int x = 0; x < width; ++x)
             //{
@@ -51,15 +59,21 @@ namespace GrafikaProj2
             //        integers[x, y] = BitConverter.ToInt32(bgra, 0);
             //    }
             //}
-            Bitmap bitmap;
-            unsafe
-            {
-                fixed (int* intPtr = &integers[0, 0])
-                {
-                    bitmap = new Bitmap(integers.GetLength(0), integers.GetLength(1), stride*5, System.Drawing.Imaging.PixelFormat.Format32bppRgb, new IntPtr(intPtr));
-                }
-            }
-            mainIMG.Source = ImageSourceForBitmap(bitmap);
+            //Bitmap bitmap;
+            //unsafe
+            //{
+            //    fixed (int* intPtr = &integers[0, 0])
+            //    {
+            //        bitmap = new Bitmap(integers.GetLength(0), integers.GetLength(1), stride, System.Drawing.Imaging.PixelFormat.Format32bppRgb, new IntPtr(intPtr));
+            //    }
+            //}
+            //mainIMG.Source = ImageSourceForBitmap(bitmap);
+
+
+            //BitmapSource bmpS = BitmapSource.Create((int)Width, (int)Height, 100, 100, PixelFormats.Indexed8, BitmapPalettes.Gray256, b, 3);
+            byte[] b = new byte[] { 255, 3, 100, 200,253, 123, 0, 50, 75 , 66, 55, 22};
+            BitmapSource bmpS = BitmapSource.Create(3, 4, 1, 1, PixelFormats.Indexed8, myPalette, b,3);
+            mainIMG.Source = bmpS;
         }
 
 
@@ -117,8 +131,8 @@ namespace GrafikaProj2
             InitializeComponent();
             figure = new Figure(350, 150, 0);
             mt = new double[(int)Width, (int)Height];
-            //fillTopFlatTriangle(new double[] { 50, 50 }, new double[] { 500,50}, new double[] { 400, 400 });
-            fillBottomFlatTriangle(new double[] { 200, 50 }, new double[] { 100,400}, new double[] { 300, 400 });
+            fillTopFlatTriangle(new double[] { 50, 50 }, new double[] { 500, 50 }, new double[] { 400, 400 });
+            //fillBottomFlatTriangle(new double[] { 200, 50 }, new double[] { 250,400}, new double[] { 300, 400 });
 
             int[,] tmp = new int[(int)Width, (int)Height];
             for (int i = 0; i < mt.GetLength(0); i++)

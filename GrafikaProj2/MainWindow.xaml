@@ -13,6 +13,6 @@
                 Height="{Binding ElementName=mainGrid, Path=ActualHeight}" 
                 Width="{Binding ElementName=mainGrid, Path=ActualWidth}"
                 Background="PaleGoldenrod"></Canvas>-->
-        <Image x:Name="mainIMG"></Image>
+        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" x:Name="mainIMG"></Image>
     </Grid>
 </Window>
