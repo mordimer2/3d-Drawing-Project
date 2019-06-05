@@ -45,8 +45,14 @@ namespace GrafikaProj2
             {
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
-                    this.mt[(int)xstart, scanlineY] = BitConverter.ToInt32(new byte[] { (byte)rand.Next(255), (byte)rand.Next(255), (byte)rand.Next(255), 255 }, 0);
+                    //this.mt[(int)xstart, scanlineY] = BitConverter.ToInt32(new byte[] { (byte)rand.Next(255), (byte)rand.Next(255), (byte)rand.Next(255), 255 }, 0);
                     //this.colorRGB[(int)xstart, scanlineY] = color;
+                    try
+                    {
+                        this.mt[(int)xstart, scanlineY] = 2;
+
+                    }
+                    catch (IndexOutOfRangeException) { }
                 }
                 curx1 -= invslope1;
                 curx2 -= invslope2;
@@ -77,19 +83,28 @@ namespace GrafikaProj2
                 curx2 += invslope2;
             }
         }
+
+        public void test(object sender, EventArgs asd)
+        {
+            mt = new double[(int)Width, (int)Height];
+            mainCanvas.Children.Clear();
+            Random r1 = new Random();
+            fillBottomFlatTriangle(new double[] { r1.Next(0,400), r1.Next(1,100) }, new double[] { r1.Next(100), 200 }, new double[] { r1.Next(101,300), 200 });
+            fillTopFlatTriangle(new double[] { 5, 5 }, new double[] { 100, 5 }, new double[] { 10, 100 });
+            DrawLineByLine(mt);
+        }
         public MainWindow()
         {
             InitializeComponent();
             figure = new Figure(350, 150, 0);
-            mt = new double[(int)Width/4,(int)Height/4];
-            fillBottomFlatTriangle(new double[] { 10, 30 }, new double[] { 5, 50 }, new double[] { 50, 50 });
-            DrawLineByLine(mt);
+            mt = new double[(int)Width,(int)Height];
+
             //zBuffer = new ZBuffer((int)Width, (int)Height,  new byte[] { 0, 0, 0 });
             //bitmap = new Bitmap((int)Width, (int)Height);
-            //DispatcherTimer timer = new DispatcherTimer();
-            //timer.Interval = new TimeSpan(100000);
-            //timer.Tick += DrawSquare;
-            //timer.Start();
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(100000);
+            timer.Tick += test;
+            timer.Start();
         }
 
 
