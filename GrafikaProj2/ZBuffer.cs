@@ -15,7 +15,7 @@ namespace GrafikaProj2
 
         //private Color baseColor { get; set; }
 
-        public byte[,][] colorRGB { get; private set; }
+        public byte[] colorRGB { get; private set; }
         private byte[] baseColor { get; set; }
 
 
@@ -27,7 +27,7 @@ namespace GrafikaProj2
             this.height = height;
             Surface = new double[width, height];
             //ColorsTab = new Color[width, height];
-            colorRGB = new byte[width, height][];
+            colorRGB = new byte[width*height];
 
             baseColor = baseRGB;
             ResetBoard();
@@ -35,43 +35,21 @@ namespace GrafikaProj2
         }
         public void ResetBoard()
         {
+            colorRGB = new byte[width * height];
             for (int i = 0; i < Surface.GetLength(0); i++)
                 for (int j = 0; j < Surface.GetLength(1); j++)
-                {
-                    Surface[i, j] = int.MaxValue;
-                    //ColorsTab[i, j] = baseColor;
-                    colorRGB[i, j] = new byte[] { baseColor[0], baseColor[1], baseColor[2] };
-                }
+                    Surface[i, j] = 99999;
+
+            //for (int i = 0; i < Surface.GetLength(0); i++)
+            //    for (int j = 0; j < Surface.GetLength(1); j++)
+            //    {
+            //        Surface[i, j] = int.MaxValue;
+            //        //ColorsTab[i, j] = baseColor;
+            //        colorRGB[i, j] = new byte[] { baseColor[0], baseColor[1], baseColor[2] };
+            //    }
         }
 
-        public void CalculateDepth23(List<Triangle> triangles)
-        {
-            ResetBoard();
-
-            Random rnd = new Random();
-            foreach (var triangle in triangles)
-            {
-                byte[] randomColor = new byte[] { (byte)rnd.Next(256), (byte)rnd.Next(256), (byte)rnd.Next(256) };
-
-
-                for (int i = (triangle.MinX >= 0 ? (int)triangle.MinX : 0); i < (triangle.MaxX < Surface.GetLength(0) ? triangle.MaxX : Surface.GetLength(0)); i++)
-                {
-                    for (int j = (triangle.MinY >= 0 ? (int)triangle.MinY : 0); j < (triangle.MaxY < Surface.GetLength(1) ? triangle.MaxY : Surface.GetLength(1)); j++)
-                    {
-                        double tmp = triangle.ZValue(i, j);
-                        if (tmp < this.Surface[i, j])
-                        {
-                            this.Surface[i, j] = tmp;
-                            //this.ColorsTab[i, j] = randomColor;
-                            this.colorRGB[i, j] = randomColor;
-                        }
-                    }
-                }
-
-            }
-        }
-
-        private void fillBottomFlatTriangle(double[] v1, double[] v2, double[] v3, Triangle t, byte[] color)
+        public void fillBottomFlatTriangle(double[] v1, double[] v2, double[] v3, Triangle t, byte color)
         {
             double invslope1 = (v2[0] - v1[0]) / (v2[1] - v1[1]);
             double invslope2 = (v3[0] - v1[0]) / (v3[1] - v1[1]);
@@ -89,7 +67,7 @@ namespace GrafikaProj2
                         if (tmp < this.Surface[(int)xstart, scanlineY])
                         {
                             this.Surface[(int)xstart, scanlineY] = tmp;
-                            this.colorRGB[(int)xstart, scanlineY] = color;
+                            this.colorRGB[(int)(xstart+ scanlineY*width)] = color;
                         }
                     }
                     catch (Exception) { }
@@ -101,7 +79,7 @@ namespace GrafikaProj2
             }
         }
 
-        private void fillTopFlatTriangle(double[] v1, double[] v2, double[] v3, Triangle t, byte[] color)
+        private void fillTopFlatTriangle(double[] v1, double[] v2, double[] v3, Triangle t, byte color)
         {
             double invslope1 = (v3[0] - v1[0]) / (v3[1] - v1[1]);
             double invslope2 = (v3[0] - v2[0]) / (v3[1] - v2[1]);
@@ -119,7 +97,7 @@ namespace GrafikaProj2
                         if (tmp < this.Surface[(int)xstart, scanlineY])
                         {
                             this.Surface[(int)xstart, scanlineY] = tmp;
-                            this.colorRGB[(int)xstart, scanlineY] = color;
+                            this.colorRGB[(int)(xstart + scanlineY * width)] = color;
                         }
                     }
 
@@ -140,8 +118,9 @@ namespace GrafikaProj2
             {
 
                 triangle.SortPointsByYAxis();
+                triangle.CalculateCoefficients();
 
-                byte[] randomColor = new byte[] { (byte)rnd.Next(256), (byte)rnd.Next(256), (byte)rnd.Next(256) };
+                byte randomColor =  (byte)rnd.Next(255);
 
                 double[] v1 = Figure.actualListOfPoints[triangle.Point1];
                 double[] v2 = Figure.actualListOfPoints[triangle.Point2];
@@ -154,8 +133,6 @@ namespace GrafikaProj2
                 else
                 {
                     double[] tmpVert = new double[] {v1[0]+ (( (v2[1] - v1[1]) / (v3[1] - v1[1])) * (v3[0] - v1[0])), v2[1] };
-                    //Vertice v4 = new Vertice(
-                    //    (int)(vt1.x + ((float)(vt2.y - vt1.y) / (float)(vt3.y - vt1.y)) * (vt3.x - vt1.x)), vt2.y);
                     fillBottomFlatTriangle(v1, v2, tmpVert, triangle, randomColor);
                     fillTopFlatTriangle(v2, tmpVert, v3, triangle, randomColor);
                 }
