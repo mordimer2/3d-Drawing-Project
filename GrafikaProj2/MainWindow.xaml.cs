@@ -91,30 +91,48 @@ namespace GrafikaProj2
             Random r1 = new Random();
             fillBottomFlatTriangle(new double[] { r1.Next(0,400), r1.Next(1,100) }, new double[] { r1.Next(100), 200 }, new double[] { r1.Next(101,300), 200 });
             fillTopFlatTriangle(new double[] { 5, 5 }, new double[] { 100, 5 }, new double[] { 10, 100 });
-            DrawLineByLine(mt);
+            //DrawLineByLine();
         }
         public MainWindow()
         {
             InitializeComponent();
-            figure = new Figure(350, 150, 0);
-            mt = new double[(int)Width,(int)Height];
+            figure = new Figure(350, 150, 100);
 
-            //zBuffer = new ZBuffer((int)Width, (int)Height,  new byte[] { 0, 0, 0 });
-            //bitmap = new Bitmap((int)Width, (int)Height);
+            zBuffer = new ZBuffer((int)Width, (int)Height, new byte[] { 0, 0, 0 });
+
+
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(100000);
-            timer.Tick += test;
+            timer.Tick += DrawLineByLine;
             timer.Start();
         }
 
 
-        private void DrawLineByLine(double[,] depthMatrix)
+        private void DrawLineByLine(object sender, EventArgs args)
         {
+
+            if (xDeg >= 360) xDeg -= 360;
+            if (yDeg >= 360) yDeg -= 360;
+            if (zDeg >= 360) zDeg -= 360;
+            if (size < 100 && zmiana) size += 1; else zmiana = false;
+            if (size > 50 && !zmiana) size -= 1; else zmiana = true;
+            Random r = new Random();
+            int rand = r.Next(3);
+            if (rand == 0) xDeg += 0.5;
+            else if (rand == 1) yDeg += 0.5;
+            else zDeg += 0.5;
+            mainCanvas.Children.Clear();
+
+            figure.Transform(xDeg, yDeg, zDeg, size);
+            zBuffer.CalculateDepth(figure.triangles);
+
+
+            double[,] depthMatrix = depthMatrix = zBuffer.Surface;
             int[] actualStartDepth = new int[] { 0, 0 };
             bool newBeg = false;
-            for (int i = 0; i < mt.GetLength(0); i++)
+            for (int i = 0; i < depthMatrix.GetLength(0); i++)
             {
-                for (int j = 1; j < mt.GetLength(1); j++)
+                for (int j = 1; j < depthMatrix.GetLength(1); j++)
                 {
                     if (depthMatrix[i, j] == 0)
                     {
@@ -125,12 +143,12 @@ namespace GrafikaProj2
                         }
                         continue;
                     }
-                    if (!newBeg && depthMatrix[i,j-1]== depthMatrix[i, j] )
+                    if (!newBeg && Math.Floor(depthMatrix[i,j-1])== Math.Floor(depthMatrix[i, j]) )
                     {
                         actualStartDepth = new int[] { i , j-1 };
                         newBeg = true;
                     }
-                    if(newBeg && (depthMatrix[i,j-1]!= depthMatrix[i, j]))
+                    if(newBeg && (Math.Floor(depthMatrix[i,j-1])!= Math.Floor(depthMatrix[i, j])))
                     {
                         DrawLine(actualStartDepth, new int[] { i, j }, new byte[] { 0, 0, 0 });
                         actualStartDepth = new int[] { i, j };

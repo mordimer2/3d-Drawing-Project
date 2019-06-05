@@ -35,13 +35,15 @@ namespace GrafikaProj2
         }
         public void ResetBoard()
         {
-            for (int i = 0; i < Surface.GetLength(0); i++)
-                for (int j = 0; j < Surface.GetLength(1); j++)
-                {
-                    Surface[i, j] = int.MaxValue;
-                    //ColorsTab[i, j] = baseColor;
-                    colorRGB[i, j] = new byte[] { baseColor[0], baseColor[1], baseColor[2] };
-                }
+            Surface = new double[width, height];
+            colorRGB = new byte[width, height][];
+            //for (int i = 0; i < Surface.GetLength(0); i++)
+            //    for (int j = 0; j < Surface.GetLength(1); j++)
+            //    {
+            //        Surface[i, j] = int.MaxValue;
+            //        //ColorsTab[i, j] = baseColor;
+            //        colorRGB[i, j] = new byte[] { baseColor[0], baseColor[1], baseColor[2] };
+            //    }
         }
 
         public void fillBottomFlatTriangle(double[] v1, double[] v2, double[] v3, Triangle t, byte[] color)
@@ -56,10 +58,10 @@ namespace GrafikaProj2
             {
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
-                    double tmp = t.ZValue(xstart, scanlineY);
+                    double tmp = Math.Abs(t.ZValue(xstart, scanlineY));
                     try
                     {
-                        if (tmp < this.Surface[(int)xstart, scanlineY])
+                        if (tmp > this.Surface[(int)xstart, scanlineY])
                         {
                             this.Surface[(int)xstart, scanlineY] = tmp;
                             this.colorRGB[(int)xstart, scanlineY] = color;
@@ -86,10 +88,10 @@ namespace GrafikaProj2
             {
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
-                    double tmp = t.ZValue(xstart, scanlineY);
+                    double tmp = Math.Abs(t.ZValue(xstart, scanlineY));
                     try
                     {
-                        if (tmp < this.Surface[(int)xstart, scanlineY])
+                        if (tmp > this.Surface[(int)xstart, scanlineY])
                         {
                             this.Surface[(int)xstart, scanlineY] = tmp;
                             this.colorRGB[(int)xstart, scanlineY] = color;
