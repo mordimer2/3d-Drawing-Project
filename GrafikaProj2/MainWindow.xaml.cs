@@ -33,7 +33,27 @@ namespace GrafikaProj2
         ZBuffer zBuffer;
         Bitmap bitmap;
         double[,] mt;
-        private void fillBottomFlatTriangle(double[] v1, double[] v2, double[] v3, Triangle t, byte[] color)
+        private void fillTopFlatTriangle(double[] v1, double[] v2, double[] v3, byte[] color = null)
+        {
+            double invslope1 = (v3[0] - v1[0]) / (v3[1] - v1[1]);
+            double invslope2 = (v3[0] - v2[0]) / (v3[1] - v2[1]);
+
+            double curx1 = v3[0];
+            double curx2 = v3[0];
+            Random rand = new Random();
+            for (int scanlineY = (int)v3[1]; scanlineY > v1[1]; scanlineY--)
+            {
+                for (double xstart = curx1; xstart < curx2; xstart++)
+                {
+                    this.mt[(int)xstart, scanlineY] = BitConverter.ToInt32(new byte[] { (byte)rand.Next(255), (byte)rand.Next(255), (byte)rand.Next(255), 255 }, 0);
+                    //this.colorRGB[(int)xstart, scanlineY] = color;
+                }
+                curx1 -= invslope1;
+                curx2 -= invslope2;
+            }
+        }
+
+        private void fillBottomFlatTriangle(double[] v1, double[] v2, double[] v3, byte[] color = null)
         {
             double invslope1 = (v2[0] - v1[0]) / (v2[1] - v1[1]);
             double invslope2 = (v3[0] - v1[0]) / (v3[1] - v1[1]);
@@ -41,22 +61,12 @@ namespace GrafikaProj2
             double curx1 = v1[0];
             double curx2 = v1[0];
 
+            Random rand = new Random();
             for (int scanlineY = (int)v1[1]; scanlineY <= v2[1]; scanlineY++)
             {
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
-                    double tmp = t.ZValue(xstart, scanlineY);
-                    try
-                    {
-                        if (tmp < this.Surface[(int)xstart, scanlineY])
-                        {
-                            this.Surface[(int)xstart, scanlineY] = tmp;
-                            this.colorRGB[(int)xstart, scanlineY] = color;
-                        }
-                    }
-                    catch (Exception) { }
-
-
+                    this.mt[(int)xstart, scanlineY] = BitConverter.ToInt32(new byte[] { (byte)rand.Next(255), (byte)rand.Next(255), (byte)rand.Next(255), 255 }, 0);
                 }
                 curx1 += invslope1;
                 curx2 += invslope2;
@@ -66,7 +76,7 @@ namespace GrafikaProj2
         {
             InitializeComponent();
             figure = new Figure(350, 150, 0);
-            mt == new double[(int)Width, (int)Height];
+            mt = new double[(int)Width, (int)Height];
             //zBuffer = new ZBuffer((int)Width, (int)Height,  new byte[] { 0, 0, 0 });
             //bitmap = new Bitmap((int)Width, (int)Height);
             //DispatcherTimer timer = new DispatcherTimer();
