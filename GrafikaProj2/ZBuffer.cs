@@ -120,13 +120,13 @@ namespace GrafikaProj2
         {
             ResetBoard();
             int colorID = 0;
-
+            byte color = 0;
             foreach (var triangle in triangles)
             {
                 //if (colorID == 3) triangle.FlipNormal();
                 triangle.SortPointsByYAxis();
                 //triangle.CalculateCoefficients();
-                byte color =Shading.GetColor(triangle);
+                color =Shading.GetColor(triangle);
 
 
                 //byte randomColor =  (byte)rnd.Next(255);

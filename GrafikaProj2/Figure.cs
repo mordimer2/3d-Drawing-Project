@@ -29,16 +29,15 @@ namespace GrafikaProj2
             baseListOfPoints = new List<double[]>();
             triangles = new List<Triangle>();
 
-            baseListOfPoints.Add(new double[] { 0, 0, 0 }); // 0
-            baseListOfPoints.Add(new double[] { 1, 0, 0 }); // 1
-            baseListOfPoints.Add(new double[] { 0, 1, 0 }); // 2
-            baseListOfPoints.Add(new double[] { 1, 1, 0 }); // 3
-            baseListOfPoints.Add(new double[] { 0, 0, 1 }); // 4
-            baseListOfPoints.Add(new double[] { 1, 0, 1 }); // 5
-            baseListOfPoints.Add(new double[] { 0, 1, 1 }); // 6
-            baseListOfPoints.Add(new double[] { 1, 1, 1 }); // 7
+            baseListOfPoints.Add(new double[] { 0, 1, 0 }); // 0
+            baseListOfPoints.Add(new double[] { 1, 1, 0 }); // 1
+            baseListOfPoints.Add(new double[] { 0, 2, 0 }); // 2
+            baseListOfPoints.Add(new double[] { 1, 2, 0 }); // 3
+            baseListOfPoints.Add(new double[] { 0, 1, 1 }); // 4
+            baseListOfPoints.Add(new double[] { 1, 1, 1 }); // 5
+            baseListOfPoints.Add(new double[] { 0, 2, 1 }); // 6
+            baseListOfPoints.Add(new double[] { 1, 2, 1 }); // 7
 
-            Figure.actualListOfPoints = new List<double[]>(baseListOfPoints);
 
             triangles.Add(new Triangle(0,2,4));
             triangles.Add(new Triangle(0,1,4));
@@ -53,6 +52,29 @@ namespace GrafikaProj2
             triangles.Add(new Triangle(4,5,6));
             triangles.Add(new Triangle(5,6,7));
 
+            baseListOfPoints.Add(new double[] { 0, 0, 0 }); // 0
+            baseListOfPoints.Add(new double[] { 1, 0, 0 }); // 1
+            baseListOfPoints.Add(new double[] { 0, 1, 0 }); // 2
+            baseListOfPoints.Add(new double[] { 1, 1, 0 }); // 3
+            baseListOfPoints.Add(new double[] { 0, 0, 2 }); // 4
+            baseListOfPoints.Add(new double[] { 1, 0, 2 }); // 5
+            baseListOfPoints.Add(new double[] { 0, 1, 2 }); // 6
+            baseListOfPoints.Add(new double[] { 1, 1, 2 }); // 7
+
+            Figure.actualListOfPoints = new List<double[]>(baseListOfPoints);
+
+            triangles.Add(new Triangle(8, 10, 12));
+            triangles.Add(new Triangle(8, 9, 12));
+            triangles.Add(new Triangle(8, 10, 11));
+            triangles.Add(new Triangle(8, 9, 11));
+            triangles.Add(new Triangle(9, 12, 13));
+            triangles.Add(new Triangle(9, 11, 15));
+            triangles.Add(new Triangle(9, 13, 15));
+            triangles.Add(new Triangle(10, 11, 15));
+            triangles.Add(new Triangle(10, 14, 15));
+            triangles.Add(new Triangle(10, 12, 14));
+            triangles.Add(new Triangle(12, 13, 14));
+            triangles.Add(new Triangle(13, 14, 15));
 
             //listOfEdges.Add(new int[] { 0,2 });
             //listOfEdges.Add(new int[] { 0,1 });

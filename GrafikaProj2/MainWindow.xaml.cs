@@ -26,9 +26,9 @@ namespace GrafikaProj2
 
         public static double[] LightSource1 = new double[3];
         public static double[] LightSource2 = new double[3];
-        double xDeg = 20;
-        double yDeg = 30;
-        double zDeg = 40;
+        double xDeg = 0;
+        double yDeg = 0;
+        double zDeg = 0;
         double size = 100;
         bool zmiana = true;
 
@@ -36,13 +36,13 @@ namespace GrafikaProj2
         public MainWindow()
         {
             InitializeComponent();
-            LightSource1[0] = 0;
-            LightSource1[1] = 0;
+            LightSource1[0] = 350;
+            LightSource1[1] = 175;
             LightSource1[2] = -100;
             LightSource2[0] = 0.5;
             LightSource2[1] = 0.5;
             LightSource2[2] = 0.5;
-            figure = new Figure(350, 150, 0);
+            figure = new Figure(350, 175, 0);
 
 
             zBuffer = new ZBuffer((int)Width, (int)Height, new byte[] { 0, 0, 0 });
@@ -58,8 +58,8 @@ namespace GrafikaProj2
             if (xDeg >= 360) xDeg -= 360;
             if (yDeg >= 360) yDeg -= 360;
             if (zDeg >= 360) zDeg -= 360;
-            if (size < 120 && zmiana) size += 1; else zmiana = false;
-            if (size > 50 && !zmiana) size -= 1; else zmiana = true;
+            if (size < 100 && zmiana) size += 1; else zmiana = false;
+            if (size > 75 && !zmiana) size -= 1; else zmiana = true;
             //Random r = new Random();
             //int rand = r.Next(3);
             //if (rand == 0) xDeg += 0.5;
@@ -69,7 +69,7 @@ namespace GrafikaProj2
 
             yDeg +=2;
             zDeg +=1;
-            xDeg -= 0.5; ;
+            //xDeg -= 0.5; ;
             figure.Transform(xDeg, yDeg, zDeg, size);
             zBuffer.CalculateDepth(figure.triangles);
             DrawItFinally(zBuffer.colorRGB);
