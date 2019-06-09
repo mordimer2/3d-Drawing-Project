@@ -49,6 +49,10 @@ namespace GrafikaProj2
             //    }
         }
 
+        private void replace(ref double a, ref double b)
+        {
+            double tmp = a; a = b; b = tmp;
+        }
         public void fillBottomFlatTriangle(double[] v1, double[] v2, double[] v3, Triangle t, byte color)
         {
             double invslope1 = (v2[0] - v1[0]) / (v2[1] - v1[1]);
@@ -56,6 +60,8 @@ namespace GrafikaProj2
 
             double curx1 = v1[0];
             double curx2 = v1[0];
+
+            if (invslope1 > invslope2) replace(ref invslope1, ref invslope2);
 
             for (int scanlineY = (int)v1[1]; scanlineY <= v2[1]; scanlineY++)
             {
@@ -67,7 +73,7 @@ namespace GrafikaProj2
                         if (tmp < this.Surface[(int)xstart, scanlineY])
                         {
                             this.Surface[(int)xstart, scanlineY] = tmp;
-                            this.colorRGB[(int)(xstart+ scanlineY*width)] = color;
+                            this.colorRGB[(int)(xstart + scanlineY * width)] = color;
                         }
                     }
                     catch (Exception) { }
@@ -83,6 +89,7 @@ namespace GrafikaProj2
         {
             double invslope1 = (v3[0] - v1[0]) / (v3[1] - v1[1]);
             double invslope2 = (v3[0] - v2[0]) / (v3[1] - v2[1]);
+            if (invslope1 < invslope2) replace(ref invslope1, ref invslope2);
 
             double curx1 = v3[0];
             double curx2 = v3[0];
@@ -91,7 +98,7 @@ namespace GrafikaProj2
             {
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
-                    double tmp = t.ZValue(xstart, scanlineY);
+                     double tmp = t.ZValue(xstart, scanlineY);
                     try
                     {
                         if (tmp < this.Surface[(int)xstart, scanlineY])
@@ -113,10 +120,12 @@ namespace GrafikaProj2
         {
             ResetBoard();
             Random rnd = new Random();
+            byte[] colors = new byte[] { 250, 235, 220, 205, 190, 175, 160, 145, 130, 115, 100, 80};
+            int colorID = 0;
 
             foreach (var triangle in triangles)
             {
-
+                //if (colorID == 3) triangle.FlipNormal();
                 triangle.SortPointsByYAxis();
                 triangle.CalculateCoefficients();
 
@@ -125,17 +134,24 @@ namespace GrafikaProj2
                 double[] v1 = Figure.actualListOfPoints[triangle.Point1];
                 double[] v2 = Figure.actualListOfPoints[triangle.Point2];
                 double[] v3 = Figure.actualListOfPoints[triangle.Point3];
+                    
+                if (v1[1] > v2[1] || v2[1] > v3[1]) throw new Exception("Y nie są w kolejności rosnącej");
 
                 if (v2[1] == v3[1])
-                    fillBottomFlatTriangle(v1, v2, v3, triangle, randomColor);
+                    fillBottomFlatTriangle(v1, v2, v3, triangle, colors[colorID++]);
+                //fillBottomFlatTriangle(v1, v2, v3, triangle, randomColor);
                 else if (v1[1] == v2[1])
-                    fillTopFlatTriangle(v1, v2, v3, triangle, randomColor);
+                    fillTopFlatTriangle(v1, v2, v3, triangle, colors[colorID++]);
+                //fillTopFlatTriangle(v1, v2, v3, triangle, randomColor);
                 else
                 {
                     double[] tmpVert = new double[] {v1[0]+ (( (v2[1] - v1[1]) / (v3[1] - v1[1])) * (v3[0] - v1[0])), v2[1] };
-                    fillBottomFlatTriangle(v1, v2, tmpVert, triangle, randomColor);
-                    fillTopFlatTriangle(v2, tmpVert, v3, triangle, randomColor);
+                    fillBottomFlatTriangle(v1, v2, tmpVert, triangle, colors[colorID]);
+                    fillTopFlatTriangle(v2, tmpVert,v3, triangle, colors[colorID++]);
+                    //fillBottomFlatTriangle(v1, v2, tmpVert, triangle, randomColor);
+                    //fillTopFlatTriangle(v2, tmpVert, v3, triangle, randomColor);
                 }
+                //if (colorID == 3) triangle.FlipNormal();
 
             }
         }

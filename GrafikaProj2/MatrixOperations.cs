@@ -59,8 +59,8 @@ namespace GrafikaProj2
             double sinX = Math.Sin(xDegree); double sinY = Math.Sin(yDegree); double sinZ = Math.Sin(zDegree);
             double[,] rotationMatrix =
                 {{ cosY*cosZ,                    -1*cosY*sinZ,                   sinY ,          0},
-                {sinX*sinY*cosZ + cosX*sinZ,    -1*sinX*sinY*sinZ+cosX*cosZ,    -1*sinX*cosY,   0 },
-                {-1*cosX*sinY*cosZ+sinX*sinZ,   cosX*sinY*sinZ+sinX*cosZ,       cosX*cosY,      0},
+                {sinX*sinY*cosZ + cosX*sinZ,    (-1)*sinX*sinY*sinZ+cosX*cosZ,    -1*sinX*cosY,   0 },
+                {(-1)*cosX*sinY*cosZ+sinX*sinZ,   cosX*sinY*sinZ+sinX*cosZ,       cosX*cosY,      0},
                 {0,0,0,1 }};
             double[] vectorPrim = new double[] { vector[0], vector[1], vector[2], 1 };
             return CutLast(MakeVectorConsistent( MultipleMatrixAndVector( rotationMatrix, vectorPrim)));

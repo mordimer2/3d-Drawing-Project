@@ -13,7 +13,7 @@
         <!--Height="{Binding ElementName=mainGrid, Path=ActualHeight}" 
                 Width="{Binding ElementName=mainGrid, Path=ActualWidth}"
                 Background="PaleGoldenrod"></Canvas>-->
-        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" x:Name="imageHolder"></Image>
+        <Image RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" x:Name="imageHolder" Margin="0,1,-0.4,-1"></Image>
 
     </Grid>
 </Window>
