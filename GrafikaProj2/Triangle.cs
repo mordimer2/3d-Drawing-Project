@@ -9,10 +9,50 @@ namespace GrafikaProj2
     class Triangle
     {
 
-        public double A { get; private set; }
-        public double B { get; private set; }
-        public double C { get; private set; }
-        public double D { get; private set; }
+        public double A {
+            get {
+                SortPointsByYAxis();
+                double[] p1 = Figure.actualListOfPoints[Point1];
+                double[] p2 = Figure.actualListOfPoints[Point2];
+                double[] p3 = Figure.actualListOfPoints[Point3];
+                if(flipNormal==false)
+                    return (p2[1] - p1[1]) * (p3[2] - p1[2]) - (p2[2] - p1[2]) * (p3[1] - p1[1]);
+                else return (-1)*((p2[1] - p1[1]) * (p3[2] - p1[2]) - (p2[2] - p1[2]) * (p3[1] - p1[1]));
+            }
+        }
+        public double B { get
+            {
+                SortPointsByYAxis();
+                double[] p1 = Figure.actualListOfPoints[Point1];
+                double[] p2 = Figure.actualListOfPoints[Point2];
+                double[] p3 = Figure.actualListOfPoints[Point3];
+                if(flipNormal==false)
+                    return (-1) * ((p2[0] - p1[0]) * (p3[2] - p1[2]) - (p3[0] - p1[0]) * (p2[2] - p1[2]));
+                else return (-1)*((-1) * ((p2[0] - p1[0]) * (p3[2] - p1[2]) - (p3[0] - p1[0]) * (p2[2] - p1[2])));
+            } }
+        public double C { get
+            {
+                SortPointsByYAxis();
+                double[] p1 = Figure.actualListOfPoints[Point1];
+                double[] p2 = Figure.actualListOfPoints[Point2];
+                double[] p3 = Figure.actualListOfPoints[Point3];
+                if(flipNormal==false)
+                return (p2[0] - p1[0]) * (p3[1] - p1[1]) - (p3[0] - p1[0]) * (p2[1] - p1[1]);
+                else return (-1)*((p2[0] - p1[0]) * (p3[1] - p1[1]) - (p3[0] - p1[0]) * (p2[1] - p1[1]));
+
+            }
+        }
+        public double D { get {
+                SortPointsByYAxis();
+                double[] p1 = Figure.actualListOfPoints[Point1];
+                double[] p2 = Figure.actualListOfPoints[Point2];
+                double[] p3 = Figure.actualListOfPoints[Point3];
+                if(flipNormal==false)
+                    return (-1) * (A * p1[0] + B * p1[1] + C * p1[2]);
+                else return (A * p1[0] + B * p1[1] + C * p1[2]);
+            }
+
+        }
 
         //public double[] Point1 { get; private set; }
         //public double[] Point2 { get; private set; }
@@ -33,14 +73,19 @@ namespace GrafikaProj2
         public double MinZ { get { return findMin(Figure.actualListOfPoints[Point1][2], Figure.actualListOfPoints[Point2][2], Figure.actualListOfPoints[Point3][2]); } }
 
 
-
+        bool flipNormal;
         public Triangle(int point1, int point2, int point3)
         {
             Point1 = point1;
             Point2 = point2;
             Point3 = point3;
             CalculateCoefficients();
+            flipNormal = false;
+        }
 
+        public void FlipNormal()
+        {
+            flipNormal = !flipNormal;
         }
 
         public void SortPointsByYAxis()
@@ -89,26 +134,24 @@ namespace GrafikaProj2
         }
         public void CalculateCoefficients()
         {
-            SortPointsByYAxis();
-            double[] p1 = Figure.actualListOfPoints[Point1];
-            double[] p2 = Figure.actualListOfPoints[Point2];
-            double[] p3 = Figure.actualListOfPoints[Point3];
+            
             //A = (p2[2] - p3[2]) * (p1[1] - p2[1]) - (p1[2] - p2[2]) * (p2[1] - p3[1]);
             //B = (p2[0] - p3[0]) * (p1[2] - p2[2]) - (p1[0] - p2[0]) * (p2[2] - p3[2]);
             //C = (p2[1] - p3[1]) * (p1[0] - p2[0]) - (p1[1] - p2[1]) * (p2[0] - p3[0]);
             //D = -p1[0] * (p2[1] * p3[2] - p2[2] * p3[1]) + p1[1] * (p2[0] * p3[2] - p2[2] * p3[0]) - p1[2] * (p2[0] * p3[1] - p2[1] * Figure.actualListOfPoints[Point3][0]);
-            double[] p1p2 = VectorSum(p1, p2);
-            double[] p1p3 = VectorSum(p1, p3);
+            //double[] p1p2 = VectorSum(p1, p2);
+            //double[] p1p3 = VectorSum(p1, p3);
 
-            A = MatrixDet(new double[,] { { p1p2[1], p1p2[2] }, { p1p3[1], p1p3[2] } });
-            B = MatrixDet(new double[,] { { p1p2[0], p1p2[2] }, { p1p3[0], p1p3[2] } });
-            C = MatrixDet(new double[,] { { p1p2[0], p1p2[1] }, { p1p3[0], p1p3[1] } });
-            D = (-1) * (A * p1[0] + B * p1[1] + C * p1[2]);
+            //A = MatrixDet(new double[,] { { p1p2[1], p1p2[2] }, { p1p3[1], p1p3[2] } });
+            //B = MatrixDet(new double[,] { { p1p2[0], p1p2[2] }, { p1p3[0], p1p3[2] } });
+            //C = MatrixDet(new double[,] { { p1p2[0], p1p2[1] }, { p1p3[0], p1p3[1] } });
+            //D = (-1) * (A * p1[0] + B * p1[1] + C * p1[2]);
             // cross product vec1*vec2 =||a||*||b||*sin(angle)
             //A = (p2[1] - p1[1]) * (p3[2] - p1[2]) - (p3[1] - p1[1]) * (p2[2] - p1[2]);
             //B = (-1) * ((p2[2] - p1[2]) * (p3[0] - p1[0]) - (p3[2] - p1[2]) * (p2[0] - p1[0]));
             //C = (p2[0] - p1[0]) * (p3[1] - p1[1]) - (p3[0] - p1[0]) * (p2[1] - p1[1]);
             //D = (-1) * (A * p1[0] + B * p1[1] + C * p1[2]);
+            
         }
 
         private double findMax(double a1, double a2, double a3) { return Math.Max(Math.Max(a1, a2), a3); }
@@ -127,7 +170,7 @@ namespace GrafikaProj2
                 z = ((-1)*(A * x + B * y + D)) / C;
             if (MaxZ == MinZ) return MaxZ;
             //double asd=((2*((z-MinZ)/(MaxZ-MinZ))-1)+1)/2;
-            if (z < MinZ || z > MaxZ) throw new Exception("Dupa");
+            //if (z < MinZ || z > MaxZ) throw new Exception("Dupa");
             return z;
             // TODO: Znaleźć dlaczego jest zwracane złe z, prawdopodobnie współczynniki
             //return 2 * ((z-MinZ)/(MaxZ-MinZ))-1;

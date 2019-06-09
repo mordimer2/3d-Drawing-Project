@@ -121,15 +121,18 @@ namespace GrafikaProj2
             if (xDeg >= 360) xDeg -= 360;
             if (yDeg >= 360) yDeg -= 360;
             if (zDeg >= 360) zDeg -= 360;
-            if (size < 200 && zmiana) size += 1; else zmiana = false;
-            if (size > 100 && !zmiana) size -= 1; else zmiana = true;
-            Random r = new Random();
-            int rand = r.Next(3);
-            if (rand == 0) xDeg += 0.5;
-            else if (rand == 1) yDeg += 0.5;
-            else zDeg += 0.5;
-            mainCanvas.Children.Clear();
+            if (size < 120 && zmiana) size += 1; else zmiana = false;
+            if (size > 50 && !zmiana) size -= 1; else zmiana = true;
+            //Random r = new Random();
+            //int rand = r.Next(3);
+            //if (rand == 0) xDeg += 0.5;
+            //else if (rand == 1) yDeg += 0.5;
+            //else zDeg += 0.5;
+            //mainCanvas.Children.Clear();
 
+            yDeg = 20;
+            zDeg +=1;
+            xDeg = 5; ;
             figure.Transform(xDeg, yDeg, zDeg, size);
             zBuffer.CalculateDepth(figure.triangles);
             DrawItFinally(zBuffer.colorRGB);
