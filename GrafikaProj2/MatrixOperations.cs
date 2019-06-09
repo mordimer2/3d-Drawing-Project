@@ -76,5 +76,22 @@ namespace GrafikaProj2
             return output;
         }
 
+        public static double VectorScalar(double[] a, double[] b)
+        {
+            double output = 0;
+            for (int i = 0; i < a.Length; i++)
+                output += a[i] * b[i];
+            return output;
+        }
+
+        public static double[] Normalize(double[] vector)
+        {
+            double sum = 0;
+            foreach (var item in vector)
+                sum += Math.Pow(item, 2);
+            sum = Math.Sqrt(sum);
+            return new double[] { vector[0] / sum, vector[1] / sum, vector[2] / sum };
+        }
+
     }
 }
