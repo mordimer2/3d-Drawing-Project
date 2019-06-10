@@ -63,17 +63,18 @@ namespace GrafikaProj2
 
             if (invslope1 > invslope2) replace(ref invslope1, ref invslope2);
 
-            for (int scanlineY = (int)v1[1]; scanlineY <= v2[1]; scanlineY++)
+            for (int scanlineY = (int)Math.Round(v1[1]); scanlineY <= v2[1]; scanlineY++)
             {
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
+                    if (scanlineY < 0) continue;
                     double tmp = t.ZValue(xstart, scanlineY);
                     try
                     {
-                        if (tmp < this.Surface[(int)xstart, scanlineY])
+                        if (tmp < this.Surface[(int)Math.Round(xstart), scanlineY])
                         {
-                            this.Surface[(int)xstart, scanlineY] = tmp;
-                            this.colorRGB[(int)(xstart + scanlineY * width)] = color;
+                            this.Surface[(int)Math.Round(xstart), scanlineY] = tmp;
+                            this.colorRGB[(int)Math.Round((xstart + scanlineY * width))] = color;
                         }
                     }
                     catch (Exception) { }
@@ -94,17 +95,18 @@ namespace GrafikaProj2
             double curx1 = v3[0];
             double curx2 = v3[0];
 
-            for (int scanlineY = (int)v3[1]; scanlineY > v1[1]; scanlineY--)
+            for (int scanlineY = (int)Math.Round(v3[1]); scanlineY > v1[1]; scanlineY--)
             {
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
+                    if (scanlineY < 0) continue;
                      double tmp = t.ZValue(xstart, scanlineY);
                     try
                     {
-                        if (tmp < this.Surface[(int)xstart, scanlineY])
+                        if (tmp < this.Surface[(int)Math.Round(xstart), scanlineY])
                         {
-                            this.Surface[(int)xstart, scanlineY] = tmp;
-                            this.colorRGB[(int)(xstart + scanlineY * width)] = color;
+                            this.Surface[(int)Math.Round(xstart), scanlineY] = tmp;
+                            this.colorRGB[(int)Math.Round((xstart + scanlineY * width))] = color;
                         }
                     }
 
@@ -116,20 +118,20 @@ namespace GrafikaProj2
             }
         }
 
-        public void CalculateDepth(List<Triangle> triangles)
+        public void CalculateDepth(List<Triangle> triangles, double[] lightSource)
         {
             ResetBoard();
-            Random rnd = new Random();
-            byte[] colors = new byte[] { 250, 235, 220, 205, 190, 175, 160, 145, 130, 115, 100, 80};
             int colorID = 0;
-
+            byte color = 0;
             foreach (var triangle in triangles)
             {
                 //if (colorID == 3) triangle.FlipNormal();
                 triangle.SortPointsByYAxis();
-                triangle.CalculateCoefficients();
+                //triangle.CalculateCoefficients();
+                color =Shading.GetColor(triangle, lightSource);
 
-                byte randomColor =  (byte)rnd.Next(255);
+
+                //byte randomColor =  (byte)rnd.Next(255);
 
                 double[] v1 = Figure.actualListOfPoints[triangle.Point1];
                 double[] v2 = Figure.actualListOfPoints[triangle.Point2];
@@ -138,16 +140,16 @@ namespace GrafikaProj2
                 if (v1[1] > v2[1] || v2[1] > v3[1]) throw new Exception("Y nie są w kolejności rosnącej");
 
                 if (v2[1] == v3[1])
-                    fillBottomFlatTriangle(v1, v2, v3, triangle, colors[colorID++]);
+                    fillBottomFlatTriangle(v1, v2, v3, triangle, color);
                 //fillBottomFlatTriangle(v1, v2, v3, triangle, randomColor);
                 else if (v1[1] == v2[1])
-                    fillTopFlatTriangle(v1, v2, v3, triangle, colors[colorID++]);
+                    fillTopFlatTriangle(v1, v2, v3, triangle, color);
                 //fillTopFlatTriangle(v1, v2, v3, triangle, randomColor);
                 else
                 {
                     double[] tmpVert = new double[] {v1[0]+ (( (v2[1] - v1[1]) / (v3[1] - v1[1])) * (v3[0] - v1[0])), v2[1] };
-                    fillBottomFlatTriangle(v1, v2, tmpVert, triangle, colors[colorID]);
-                    fillTopFlatTriangle(v2, tmpVert,v3, triangle, colors[colorID++]);
+                    fillBottomFlatTriangle(v1, v2, tmpVert, triangle, color);
+                    fillTopFlatTriangle(v2, tmpVert,v3, triangle, color);
                     //fillBottomFlatTriangle(v1, v2, tmpVert, triangle, randomColor);
                     //fillTopFlatTriangle(v2, tmpVert, v3, triangle, randomColor);
                 }

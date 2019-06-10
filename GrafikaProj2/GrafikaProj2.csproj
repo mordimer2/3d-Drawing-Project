@@ -56,6 +56,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="MatrixOperations.cs" />
+    <Compile Include="Shading.cs" />
     <Compile Include="Triangle.cs" />
     <Compile Include="Figure.cs" />
     <Compile Include="ZBuffer.cs" />

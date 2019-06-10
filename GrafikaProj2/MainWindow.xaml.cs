@@ -14,7 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes; 
 using System.Windows.Threading;
-using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace GrafikaProj2
 {
@@ -24,15 +23,136 @@ namespace GrafikaProj2
     public partial class MainWindow : Window
     {
         private Figure figure;
-        double xDeg = 20;
-        double yDeg = 30;
-        double zDeg = 40;
+
+        public static double[] LightSource1 = new double[3];
+        public static double[] LightSource2 = new double[3];
+        double xDeg = 0;
+        double yDeg = 0;
+        double zDeg = 0;
         double size = 100;
         bool zmiana = true;
 
         ZBuffer zBuffer;
-        Bitmap bitmap;
-        double[,] mt;
+
+
+        double[] refToActualLight;
+        public MainWindow()
+        {
+            int startX = 350, startY = 220, startZ = 0;
+            InitializeComponent();
+            LightSource1[0] = -1*size + startX;
+            LightSource1[1] = 0.5*size + startY;
+            LightSource1[2] = 3 * size + startZ;
+            LightSource2[0] = 0.5*size + startX;
+            LightSource2[1] = 1*size + startY;
+            LightSource2[2] = -10*size +startZ;
+            
+            refToActualLight = LightSource1;
+            figure = new Figure(startX, startY, startZ);
+
+
+            zBuffer = new ZBuffer((int)Width, (int)Height, new byte[] { 0, 0, 0 });
+
+            DrawNew(null, null);
+            //bitmap = new Bitmap((int)Width, (int)Height);
+            //DispatcherTimer timer = new DispatcherTimer();
+            //timer.Interval = new TimeSpan(1000000);
+            //timer.Tick += DrawNew;
+            //timer.Start();
+        }
+
+        public void DrawNew(object sender, EventArgs args)
+        {
+            //if (xDeg >= 360) xDeg -= 360;
+            //if (yDeg >= 360) yDeg -= 360;
+            //if (zDeg >= 360) zDeg -= 360;
+            //if (size < 100 && zmiana) size += 1; else zmiana = false;
+            //if (size > 75 && !zmiana) size -= 1; else zmiana = true;
+            ////Random r = new Random();
+            //int rand = r.Next(3);
+            //if (rand == 0) xDeg += 0.5;
+            //else if (rand == 1) yDeg += 0.5;
+            //else zDeg += 0.5;
+            //mainCanvas.Children.Clear();
+
+            //yDeg += 2;
+            //zDeg += 1;
+            //xDeg -= 0.5; ;
+            figure.Transform(xDeg, yDeg, zDeg, size);
+            zBuffer.CalculateDepth(figure.triangles, refToActualLight);
+            DrawItFinally(zBuffer.colorRGB);
+        }
+
+        public void DrawItFinally(byte[] byteArray)
+        {
+            BitmapSource bitmapSource = BitmapSource.Create((int)Width, (int)Height,
+                                                            1, 1,
+                                                            PixelFormats.Indexed8, BitmapPalettes.Gray256,
+                                                            byteArray, (int)(Width * 1 + (Width % 2)));
+
+            imageHolder.Source = bitmapSource;
+        }
+
+
+
+        private void mainWindow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void MainGrid_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.O)
+                refToActualLight = LightSource1;
+            else if (e.Key == Key.P)
+                refToActualLight = LightSource2;
+            else if (e.Key == Key.E)
+                size += 5;
+            else if (e.Key == Key.Q)
+            {
+                if (size > 50)
+                    size -= 5;
+            }
+            else if (e.Key == Key.A)
+            {
+                if (yDeg >= 360) yDeg -= 360;
+                yDeg += 1;
+            }
+            else if (e.Key == Key.D)
+            {
+                if (yDeg <= 0) yDeg += 360;
+                yDeg -= 1;
+            }
+            else if (e.Key == Key.W)
+            {
+                if (xDeg >= 360) xDeg -= 360;
+                xDeg += 1;
+            }
+            else if (e.Key == Key.S)
+            {
+                if (xDeg <= 0) xDeg += 360;
+                xDeg -= 1;
+            }
+            else if (e.Key == Key.Z)
+            {
+                if (zDeg >= 360) zDeg -= 360;
+                zDeg += 1;
+            }
+            else if (e.Key == Key.C)
+            {
+                if (zDeg <= 0) zDeg += 360;
+                zDeg -= 1;
+            }
+            figure.Transform(xDeg, yDeg, zDeg, size);
+            zBuffer.CalculateDepth(figure.triangles, refToActualLight);
+            DrawItFinally(zBuffer.colorRGB);
+        }
+    }
+}
+
+
+
+/* 
         private void fillTopFlatTriangle(double[] v1, double[] v2, double[] v3, byte[] color = null)
         {
             double invslope1 = (v3[0] - v1[0]) / (v3[1] - v1[1]);
@@ -94,51 +214,8 @@ namespace GrafikaProj2
             DrawLineByLine(mt);
         }
 
-        public void DrawItFinally(byte[] byteArray)
-        {
-            BitmapSource bitmapSource = BitmapSource.Create((int)Width, (int)Height, 
-                                                            1,1, 
-                                                            PixelFormats.Indexed8, BitmapPalettes.Gray256,
-                                                            byteArray, (int)(Width * 1 + (Width % 2)));
-
-            imageHolder.Source = bitmapSource;
-        }
-        public MainWindow()
-        {
-            InitializeComponent();
-            figure = new Figure(350, 150, 0);
-            mt = new double[(int)Width,(int)Height];
-
-            zBuffer = new ZBuffer((int)Width, (int)Height, new byte[] { 0, 0, 0 });
-            //bitmap = new Bitmap((int)Width, (int)Height);
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(1000000);
-            timer.Tick += DrawNew;
-            timer.Start();
-        }
-        public void DrawNew(object sender, EventArgs args)
-        {
-            if (xDeg >= 360) xDeg -= 360;
-            if (yDeg >= 360) yDeg -= 360;
-            if (zDeg >= 360) zDeg -= 360;
-            if (size < 120 && zmiana) size += 1; else zmiana = false;
-            if (size > 50 && !zmiana) size -= 1; else zmiana = true;
-            //Random r = new Random();
-            //int rand = r.Next(3);
-            //if (rand == 0) xDeg += 0.5;
-            //else if (rand == 1) yDeg += 0.5;
-            //else zDeg += 0.5;
-            //mainCanvas.Children.Clear();
-
-            yDeg = 20;
-            zDeg +=1;
-            xDeg = 5; ;
-            figure.Transform(xDeg, yDeg, zDeg, size);
-            zBuffer.CalculateDepth(figure.triangles);
-            DrawItFinally(zBuffer.colorRGB);
-        }
-
-        private void DrawLineByLine(double[,] depthMatrix)
+ 
+             private void DrawLineByLine(double[,] depthMatrix)
         {
             int[] actualStartDepth = new int[] { 0, 0 };
             bool newBeg = false;
@@ -275,10 +352,4 @@ namespace GrafikaProj2
             l.Y2 = (int)stop[1];
             mainCanvas.Children.Add(l);
         }
-
-        private void mainWindow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-    }
-}
+*/

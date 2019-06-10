@@ -62,15 +62,40 @@ namespace GrafikaProj2
         public int Point2 { get; private set; }
         public int Point3 { get; private set; }
 
-
         public double MaxX { get { return findMax(Figure.actualListOfPoints[Point1][0], Figure.actualListOfPoints[Point2][0], Figure.actualListOfPoints[Point3][0]);} }
         public double MaxY { get { return findMax(Figure.actualListOfPoints[Point1][1], Figure.actualListOfPoints[Point2][1], Figure.actualListOfPoints[Point3][1]); } }
         public double MaxZ { get { return findMax(Figure.actualListOfPoints[Point1][2], Figure.actualListOfPoints[Point2][2], Figure.actualListOfPoints[Point3][2]); } }
 
-
         public double MinX { get { return findMin(Figure.actualListOfPoints[Point1][0], Figure.actualListOfPoints[Point2][0], Figure.actualListOfPoints[Point3][0]); } }
         public double MinY { get { return findMin(Figure.actualListOfPoints[Point1][1], Figure.actualListOfPoints[Point2][1], Figure.actualListOfPoints[Point3][1]); } }
         public double MinZ { get { return findMin(Figure.actualListOfPoints[Point1][2], Figure.actualListOfPoints[Point2][2], Figure.actualListOfPoints[Point3][2]); } }
+
+        public double[] AverageNormalVector
+        {
+            get {
+                double[] n1 = MatrixOperations.Normalize(Figure.actualListOfPoints[Point1]);
+                double[] n2 = MatrixOperations.Normalize(Figure.actualListOfPoints[Point2]);
+                double[] n3 = MatrixOperations.Normalize(Figure.actualListOfPoints[Point3]);
+                double[] avgNorm = new double[3];
+                for (int i = 0; i < n1.Length; i++)
+                    avgNorm[i] = (n1[i] + n2[i] + n3[i]) / 3;
+                return avgNorm;
+            }
+        }
+
+        public double[] CenterPoint
+        {
+            get
+            {
+                double[] n1 = Figure.actualListOfPoints[Point1];
+                double[] n2 = Figure.actualListOfPoints[Point2];
+                double[] n3 = Figure.actualListOfPoints[Point3];
+                double[] avgNorm = new double[3];
+                for (int i = 0; i < n1.Length; i++)
+                    avgNorm[i] = (n1[i] + n2[i] + n3[i]) / 3;
+                return avgNorm;
+            }
+        }
 
 
         bool flipNormal;
@@ -105,13 +130,7 @@ namespace GrafikaProj2
             if (p2Y> p3Y){int tmp = Point2; Point2 = Point3; Point3 = tmp;}
         }
 
-        private double Scalar(double[] a, double[] b)
-        {
-            double output = 0;
-            for (int i = 0; i < a.Length; i++)
-                output += a[i] * b[i];
-            return output;
-        }
+        
         private double VectorLen(double[] a)
         {
             double output = 0;
@@ -170,9 +189,8 @@ namespace GrafikaProj2
                 z = ((-1)*(A * x + B * y + D)) / C;
             if (MaxZ == MinZ) return MaxZ;
             //double asd=((2*((z-MinZ)/(MaxZ-MinZ))-1)+1)/2;
-            //if (z < MinZ || z > MaxZ) throw new Exception("Dupa");
+            //if (z < MinZ || z > MaxZ) throw new Exception("Coś idzie nie tak, i to bardzooo");
             return z;
-            // TODO: Znaleźć dlaczego jest zwracane złe z, prawdopodobnie współczynniki
             //return 2 * ((z-MinZ)/(MaxZ-MinZ))-1;
         }
     }
