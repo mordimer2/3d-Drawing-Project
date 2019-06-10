@@ -67,6 +67,7 @@ namespace GrafikaProj2
             {
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
+                    if (scanlineY < 0) continue;
                     double tmp = t.ZValue(xstart, scanlineY);
                     try
                     {
@@ -98,6 +99,7 @@ namespace GrafikaProj2
             {
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
+                    if (scanlineY < 0) continue;
                      double tmp = t.ZValue(xstart, scanlineY);
                     try
                     {
@@ -116,7 +118,7 @@ namespace GrafikaProj2
             }
         }
 
-        public void CalculateDepth(List<Triangle> triangles)
+        public void CalculateDepth(List<Triangle> triangles, double[] lightSource)
         {
             ResetBoard();
             int colorID = 0;
@@ -126,7 +128,7 @@ namespace GrafikaProj2
                 //if (colorID == 3) triangle.FlipNormal();
                 triangle.SortPointsByYAxis();
                 //triangle.CalculateCoefficients();
-                color =Shading.GetColor(triangle);
+                color =Shading.GetColor(triangle, lightSource);
 
 
                 //byte randomColor =  (byte)rnd.Next(255);
