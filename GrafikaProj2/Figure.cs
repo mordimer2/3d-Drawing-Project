@@ -61,8 +61,6 @@ namespace GrafikaProj2
             baseListOfPoints.Add(new double[] { 0, 1, 2 }); // 6
             baseListOfPoints.Add(new double[] { 1, 1, 2 }); // 7
 
-            Figure.actualListOfPoints = new List<double[]>(baseListOfPoints);
-
             triangles.Add(new Triangle(8, 10, 12));
             triangles.Add(new Triangle(8, 9, 12));
             triangles.Add(new Triangle(8, 10, 11));
@@ -75,6 +73,30 @@ namespace GrafikaProj2
             triangles.Add(new Triangle(10, 12, 14));
             triangles.Add(new Triangle(12, 13, 14));
             triangles.Add(new Triangle(13, 14, 15));
+
+            baseListOfPoints.Add(new double[] { 0.3, 2, 0 }); // 0
+            baseListOfPoints.Add(new double[] { 0.7, 2, 0 }); // 1
+            baseListOfPoints.Add(new double[] { 0.3, 2.25, 0 }); // 2
+            baseListOfPoints.Add(new double[] { 0.7, 2.25, 0 }); // 3
+            baseListOfPoints.Add(new double[] { 0.3, 2, 2 }); // 4
+            baseListOfPoints.Add(new double[] { 0.7, 2, 2 }); // 5
+            baseListOfPoints.Add(new double[] { 0.3, 2.25, 2 }); // 6
+            baseListOfPoints.Add(new double[] { 0.7, 2.25, 2 }); // 7
+
+            Figure.actualListOfPoints = new List<double[]>(baseListOfPoints);
+
+            triangles.Add(new Triangle(16, 18, 20));
+            triangles.Add(new Triangle(16, 17, 20));
+            triangles.Add(new Triangle(16, 18, 19));
+            triangles.Add(new Triangle(16, 17, 19));
+            triangles.Add(new Triangle(17, 20, 21));
+            triangles.Add(new Triangle(17, 19, 23));
+            triangles.Add(new Triangle(17, 21, 23));
+            triangles.Add(new Triangle(18, 19, 23));
+            triangles.Add(new Triangle(18, 22, 23));
+            triangles.Add(new Triangle(18, 20, 22));
+            triangles.Add(new Triangle(20, 21, 22));
+            triangles.Add(new Triangle(21, 22, 23));
 
             //listOfEdges.Add(new int[] { 0,2 });
             //listOfEdges.Add(new int[] { 0,1 });

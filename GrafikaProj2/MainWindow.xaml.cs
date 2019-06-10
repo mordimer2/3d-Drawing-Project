@@ -26,10 +26,10 @@ namespace GrafikaProj2
 
         public static double[] LightSource1 = new double[3];
         public static double[] LightSource2 = new double[3];
-        double xDeg = 0;
-        double yDeg = 0;
-        double zDeg = 0;
-        double size = 100;
+        double xDeg = 10;
+        double yDeg = 170;
+        double zDeg = 180;
+        double size = 70;
         bool zmiana = true;
 
         ZBuffer zBuffer;
@@ -40,12 +40,12 @@ namespace GrafikaProj2
         {
             int startX = 350, startY = 220, startZ = 0;
             InitializeComponent();
-            LightSource1[0] = -1*size + startX;
-            LightSource1[1] = 0.5*size + startY;
-            LightSource1[2] = 3 * size + startZ;
-            LightSource2[0] = 0.5*size + startX;
-            LightSource2[1] = 1*size + startY;
-            LightSource2[2] = -10*size +startZ;
+            LightSource1[0] = -1  *size + startX;
+            LightSource1[1] = 0.5 *size + startY;
+            LightSource1[2] = 3   *size + startZ;
+            LightSource2[0] = 0.5 *size + startX;
+            LightSource2[1] = 1   *size + startY;
+            LightSource2[2] = -10 *size + startZ;
             
             refToActualLight = LightSource1;
             figure = new Figure(startX, startY, startZ);
