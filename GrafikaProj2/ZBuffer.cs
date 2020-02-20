@@ -10,11 +10,6 @@ namespace GrafikaProj2
     class ZBuffer
     {
         public double[,] Surface { get; private set; }
-
-        //public Color[,] ColorsTab { get; private set; }
-
-        //private Color baseColor { get; set; }
-
         public byte[] colorRGB { get; private set; }
         private byte[] baseColor { get; set; }
 
@@ -26,12 +21,10 @@ namespace GrafikaProj2
             this.width = width;
             this.height = height;
             Surface = new double[width, height];
-            //ColorsTab = new Color[width, height];
-            colorRGB = new byte[width*height];
+            colorRGB = new byte[width * height];
 
             baseColor = baseRGB;
             ResetBoard();
-
         }
         public void ResetBoard()
         {
@@ -40,13 +33,6 @@ namespace GrafikaProj2
                 for (int j = 0; j < Surface.GetLength(1); j++)
                     Surface[i, j] = 99999;
 
-            //for (int i = 0; i < Surface.GetLength(0); i++)
-            //    for (int j = 0; j < Surface.GetLength(1); j++)
-            //    {
-            //        Surface[i, j] = int.MaxValue;
-            //        //ColorsTab[i, j] = baseColor;
-            //        colorRGB[i, j] = new byte[] { baseColor[0], baseColor[1], baseColor[2] };
-            //    }
         }
 
         private void replace(ref double a, ref double b)
@@ -100,7 +86,7 @@ namespace GrafikaProj2
                 for (double xstart = curx1; xstart < curx2; xstart++)
                 {
                     if (scanlineY < 0) continue;
-                     double tmp = t.ZValue(xstart, scanlineY);
+                    double tmp = t.ZValue(xstart, scanlineY);
                     try
                     {
                         if (tmp < this.Surface[(int)Math.Round(xstart), scanlineY])
@@ -118,42 +104,60 @@ namespace GrafikaProj2
             }
         }
 
+        /// <summary>
+        /// PL: Funkcja kalkulująca jak daleko od źródła światła znajdują się poszczególne trójkąty. Dzieli potem trójkąt na górną i dolną połowę.
+        /// Każdą z nich następnie wypełnia
+        /// EN: Function that calculates how far is from light source from triangles. Then it splits triangles into 2 groups: a bottom baseline and a top  baseline.
+        /// for each baseline location there is separate algorithm, that fills triangles with choosen color
+        ///                     ^       example of bottom flat baseline
+        ///                    / \
+        ///                   /   \
+        ///                  /     \
+        ///                 /_______\
+        ///                 
+        ///                 ----------  example of top flat baseline triangle
+        ///                 \        |
+        ///                  \       |
+        ///                   \      |
+        ///                    \     |
+        ///                     \    |
+        ///                      \   |
+        ///                       \  |
+        ///                        \ |
+        ///                         \|
+        ///                         
+        /// ZBuffer source and algorithm references:
+        /// 1. https://www.geeksforgeeks.org/z-buffer-depth-buffer-method/
+        /// 2. https://en.wikipedia.org/wiki/Z-buffering
+        /// 3. https://www.ques10.com/p/22067/write-and-explain-the-depth-bufferz-buffer-algorit/
+        /// </summary>
+        /// <param name="triangles">trójkąty w 3d / list of triangles that make the shape</param>
+        /// <param name="lightSource">punkt 3d ze źródłem światła / 3d light source points </param>
         public void CalculateDepth(List<Triangle> triangles, double[] lightSource)
         {
             ResetBoard();
-            int colorID = 0;
             byte color = 0;
             foreach (var triangle in triangles)
             {
-                //if (colorID == 3) triangle.FlipNormal();
                 triangle.SortPointsByYAxis();
-                //triangle.CalculateCoefficients();
-                color =Shading.GetColor(triangle, lightSource);
+                color = Shading.GetColor(triangle, lightSource);
 
+                double[] v1 = Figure.currentListOfPoints[triangle.Point1];
+                double[] v2 = Figure.currentListOfPoints[triangle.Point2];
+                double[] v3 = Figure.currentListOfPoints[triangle.Point3];
 
-                //byte randomColor =  (byte)rnd.Next(255);
-
-                double[] v1 = Figure.actualListOfPoints[triangle.Point1];
-                double[] v2 = Figure.actualListOfPoints[triangle.Point2];
-                double[] v3 = Figure.actualListOfPoints[triangle.Point3];
-                    
                 if (v1[1] > v2[1] || v2[1] > v3[1]) throw new Exception("Y nie są w kolejności rosnącej");
 
                 if (v2[1] == v3[1])
                     fillBottomFlatTriangle(v1, v2, v3, triangle, color);
-                //fillBottomFlatTriangle(v1, v2, v3, triangle, randomColor);
                 else if (v1[1] == v2[1])
                     fillTopFlatTriangle(v1, v2, v3, triangle, color);
-                //fillTopFlatTriangle(v1, v2, v3, triangle, randomColor);
                 else
                 {
-                    double[] tmpVert = new double[] {v1[0]+ (( (v2[1] - v1[1]) / (v3[1] - v1[1])) * (v3[0] - v1[0])), v2[1] };
+                    double[] tmpVert = new double[] { v1[0] + (((v2[1] - v1[1]) / (v3[1] - v1[1])) * (v3[0] - v1[0])), v2[1] };
                     fillBottomFlatTriangle(v1, v2, tmpVert, triangle, color);
-                    fillTopFlatTriangle(v2, tmpVert,v3, triangle, color);
-                    //fillBottomFlatTriangle(v1, v2, tmpVert, triangle, randomColor);
-                    //fillTopFlatTriangle(v2, tmpVert, v3, triangle, randomColor);
+                    fillTopFlatTriangle(v2, tmpVert, v3, triangle, color);
                 }
-                //if (colorID == 3) triangle.FlipNormal();
 
             }
         }

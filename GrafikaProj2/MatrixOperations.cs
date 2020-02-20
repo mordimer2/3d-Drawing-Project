@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace GrafikaProj2
 {
+    /// <summary>
+    /// Static class for common matrix operations 
+    /// </summary>
     public static class MatrixOperations
     {
         public static double[] MultipleMatrixAndVector(double[,] matrix, double[] vector)
@@ -18,27 +21,16 @@ namespace GrafikaProj2
             return vec;
         }
 
-        public static double[,] MakeHomogeneousConsistency(double [,] matrix)
-        {
-            double last = matrix[3, 3];
-            if (last == 1) return matrix;
-            double division = 1 / last;
-            for (int i = 0; i < matrix.GetLength(0); i++)
-                for (int j = 0; j < matrix.GetLength(1); j++)
-                    matrix[i, j] *= division;
-            return matrix;
-        }
-
         public static double[] MakeVectorConsistent(double[] vector)
-        { 
+        {
             if (vector[3] == 1) return vector;
             double div = 1 / vector[3];
-            for (int i = 0; i < vector.Length-1; i++)
+            for (int i = 0; i < vector.Length - 1; i++)
                 vector[i] *= div;
             return new double[] { vector[0], vector[1], vector[2] };
         }
 
-        private static double DegreesToRadians (double degree)
+        private static double DegreesToRadians(double degree)
         {
             if (degree >= 360) degree -= 360;
             return (degree * Math.PI) / 180;
@@ -63,7 +55,7 @@ namespace GrafikaProj2
                 {(-1)*cosX*sinY*cosZ+sinX*sinZ,   cosX*sinY*sinZ+sinX*cosZ,       cosX*cosY,      0},
                 {0,0,0,1 }};
             double[] vectorPrim = new double[] { vector[0], vector[1], vector[2], 1 };
-            return CutLast(MakeVectorConsistent( MultipleMatrixAndVector( rotationMatrix, vectorPrim)));
+            return CutLast(MakeVectorConsistent(MultipleMatrixAndVector(rotationMatrix, vectorPrim)));
         }
 
         public static double[,] MultipleSameSizeMatrices(double[,] matrice1, double[,] matrice2)
